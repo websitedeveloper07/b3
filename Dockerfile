@@ -11,8 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the Flask app code
 COPY app.py .
 
-# Expose port (Render typically uses 10000, but can be overridden via PORT env)
+# Expose port (Render typically uses PORT env, defaulting to 10000 if not set)
 EXPOSE 10000
 
 # Run with Gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "--workers", "2", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-10000}", "--workers", "2", "--timeout", "120", "app:app"]
