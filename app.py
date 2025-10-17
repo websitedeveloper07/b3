@@ -51,22 +51,6 @@ def gateway():
     
     ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.2 Mobile/15E148 Safari/604.1'
     
-    # BIN lookup (parsed as JSON for accuracy, no regex needed)
-    bin_url = f'https://lookup.binlist.net/{cc}'
-    try:
-        r_bin = requests.get(bin_url, timeout=10)
-        r_bin.raise_for_status()
-        bin_info = r_bin.json()
-        bank1 = bin_info.get('bank', {}).get('name', 'Unknown')
-        scheme = bin_info.get('scheme', '').capitalize()
-        type_ = bin_info.get('type', '').capitalize()
-        brand = bin_info.get('brand', '')
-        country_name = bin_info.get('country', {}).get('name', 'Unknown')
-        emoji = bin_info.get('country', {}).get('emoji', '')
-        bin_type = 'Credit' if bin_info.get('type') == 'credit' else 'Debit'
-    except Exception as e:
-        return jsonify({'error': f'BIN lookup failed: {str(e)}'})
-    
     # Session for requests (no proxies, cookies handled by session)
     s = requests.Session()
     s.headers.update({'User-Agent': ua})
@@ -214,12 +198,10 @@ def gateway():
             status = "❌ Unknown Failure"
             response_msg = r4.text[:200]  # Truncated raw response
         
-        # Card type string
-        card_type = f"{scheme} - {type_} - {brand}".strip(' -')
-        if not card_type:
-            card_type = bin_type
-        
-        country = f"{country_name} {emoji}".strip()
+        # Card type and other fields (static placeholders since BIN lookup removed)
+        card_type = "Unknown"
+        bank1 = "Unknown"
+        country = "Unknown"
         
         # Result JSON (structured, no Telegram sendMessage)
         result = {
